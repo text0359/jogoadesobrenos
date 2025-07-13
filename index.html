@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adedonha com Letícia e Werveson!</title>
+    <!-- Importa fontes do Google Fonts para um visual moderno -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Variáveis CSS para cores e sombras, reutilizadas do quiz */
+        :root {
+            --primary-color: #E91E63; /* Rosa vibrante */
+            --secondary-color: #BA68C8; /* Lilás suave */
+            --background-start: #FCE4EC; /* Rosa claro de fundo */
+            --background-end: #E1BEE7; /* Lilás claro de fundo */
+            --text-dark: #4A148C; /* Roxo escuro */
+            --text-light: #6A1B9A; /* Roxo médio */
+            --button-bg-light: #F8BBDA; /* Rosa bem claro para opções */
+            --correct-bg: #A5D6A7; /* Verde claro para acerto */
+            --correct-text: #2E7D32;
+            --incorrect-bg: #EF9A9A; /* Vermelho claro para erro */
+            --incorrect-text: #C62828;
+            --shadow-light: rgba(0, 0, 0, 0.08);
+            --shadow-medium: rgba(0, 0, 0, 0.18);
+            --shadow-strong: rgba(0, 0, 0, 0.25);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(to top, var(--background-start) 0%, var(--background-end) 100%);
+            margin: 0;
+            padding: 1.25rem;
+            box-sizing: border-box;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        #game-container {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 0.625rem 2rem var(--shadow-medium);
+            text-align: center;
+            width: 100%;
+            max-width: 37.5rem;
+            border: 2px solid var(--secondary-color);
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 2em;
+            font-weight: 700;
+            text-shadow: 0.0625rem 0.0625rem 0.125rem rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-dark);
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        /* Estilos para seleção de categorias */
+        #category-selection {
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .category-checkbox {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-checkbox input[type="checkbox"] {
+            margin-right: 0.5rem;
+            transform: scale(1.2); /* Aumenta o tamanho do checkbox */
+        }
+        
+        .category-checkbox label {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        /* Estilos para a letra sorteada */
+        #current-letter {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 4em;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 5px var(--shadow-medium);
+        }
+
+        /* Estilos para as categorias de resposta */
+        .category-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Alinha o texto à esquerda */
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            border: 1px solid var(--background-end);
+            border-radius: 0.5rem;
+            background-color: var(--button-bg-light);
+        }
+
+        .category-item label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .category-input-group {
+            display: flex;
+            width: 100%;
+            gap: 0.5rem; /* Espaçamento entre input e botões */
+        }
+
+        .category-input-group input[type="text"] {
+            flex-grow: 1; /* Ocupa o espaço restante */
+            padding: 0.6rem;
+            border: 1px solid var(--secondary-color);
+            border-radius: 0.3rem;
+            font-size: 1rem;
+            color: var(--text-dark);
+            background-color: white;
+        }
+
+        .score-buttons {
+            display: flex;
+            gap: 0.3rem;
+        }
+
+        .score-buttons button {
+            padding: 0.5rem 0.8rem;
+            border: none;
+            border-radius: 0.3rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: white;
+        }
+
+        .score-buttons .btn-5-points {
+            background-color: #FFC107; /* Amarelo para 5 pontos */
+        }
+
+        .score-buttons .btn-10-points {
+            background-color: #4CAF50; /* Verde para 10 pontos */
+        }
+
+        .score-buttons button:hover:not(:disabled) {
+            transform: translateY(-0.1rem);
+            box-shadow: 0 0.125rem 0.3125rem var(--shadow-medium);
+        }
+
+        .score-buttons button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Estilos para botões de controle do jogo */
+        .game-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 0.25rem 0.625rem var(--shadow-medium);
+        }
+
+        .game-button:hover:not(:disabled) {
+            background-color: #C2185B;
+            transform: translateY(-0.125rem);
+            box-shadow: 0 0.375rem 0.9375rem var(--shadow-strong);
+        }
+
+        .game-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Estilos para feedback e pontuação */
+        #feedback-message {
+            margin-top: 1.5rem;
+            font-weight: 700;
+            font-size: 1.2em;
+            color: var(--text-dark);
+        }
+
+        #round-score {
+            font-size: 1.1em;
+            color: var(--text-light);
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        #total-score {
+            font-size: 1.4em;
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-top: 1rem;
+        }
+
+        #round-info {
+            font-size: 1.1em;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        /* Estilos para os botões de controle de música */
+        #music-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        #music-controls .music-button {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0.125rem 0.3125rem var(--shadow-light);
+        }
+
+        #music-controls .music-button:hover {
+            background-color: #8E24AA;
+            transform: translateY(-0.1rem);
+        }
+
+        /* Estilo para a mensagem de áudio */
+        #audio-message {
+            color: #E91E63; /* Cor primária para destaque */
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+            min-height: 1.2em; /* Garante que o espaço seja reservado */
+        }
+
+
+        /* Responsividade para telas menores */
+        @media (max-width: 37.5rem) {
+            body {
+                padding: 0.75rem;
+            }
+            #game-container {
+                padding: 1.5rem;
+                border-radius: 0.75rem;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            h2 {
+                font-size: 1.3em;
+            }
+            .section-title {
+                font-size: 1.1em;
+            }
+            #current-letter {
+                font-size: 3em;
+            }
+            .category-item {
+                padding: 0.6rem;
+                margin-bottom: 0.8rem;
+            }
+            .category-item label {
+                font-size: 1rem;
+            }
+            .category-input-group input[type="text"] {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+            .score-buttons button {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.8rem;
+            }
+            .game-button {
+                padding: 0.7rem 1.5rem;
+                font-size: 1rem;
+                margin: 0.3rem;
+            }
+            #feedback-message, #round-score, #total-score, #round-info {
+                font-size: 1em;
+            }
+            #music-controls {
+                flex-direction: column; /* Empilha botões de música em telas pequenas */
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Elementos de áudio embutidos (Base64) -->
+    <!-- SUBSTITUA 'SEU_AUDIO_BASE64_AQUI_...' PELOS SEUS CÓDIGOS BASE64 -->
+    <audio id="button-click-sound">
+        <source src="data:audio/mpeg;base64,SEU_AUDIO_BASE64_AQUI_BOTAO" type="audio/mpeg">
+    </audio>
+    <audio id="correct-sound">
+        <source src="data:audio/mpeg;base64,SEU_AUDIO_BASE64_AQUI_ACERTO" type="audio/mpeg">
+    </audio>
+    <audio id="incorrect-sound">
+        <source src="data:audio/mpeg;base64,SEU_AUDIO_BASE64_AQUI_ERRO" type="audio/mpeg">
+    </audio>
+
+    <!-- Elementos de áudio de arquivos externos (na pasta music) -->
+    <audio id="victory-sound">
+        <source src="music/victory_sound.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Player de música de fundo (controlado via JS) -->
+    <audio id="background-music-player" loop></audio>
+
+    <div id="music-controls">
+        <button id="music-toggle-button" class="music-button">Tocar Música</button>
+        <button id="next-music-button" class="music-button">Próxima Música</button>
+    </div>
+    <div id="audio-message"></div> <!-- Novo elemento para mensagens de áudio -->
+
+    <div id="game-container">
+        <h1>Jogo de Adedonha!</h1>
+
+        <div id="start-screen">
+            <p class="section-title">Selecione até 8 categorias para jogar:</p>
+            <div id="category-selection">
+                <!-- Checkboxes de categorias serão inseridos aqui pelo JS -->
+            </div>
+            <button id="start-game-button" class="game-button">Iniciar Jogo</button>
+            <button id="back-to-quiz-button" class="game-button">Voltar para o Quiz</button>
+        </div>
+
+        <div id="game-screen" style="display:none;">
+            <p id="round-info"></p>
+            <p class="section-title">Letra Sorteada:</p>
+            <div id="current-letter"></div>
+            
+            <div id="answers-area">
+                <!-- Categorias de resposta e inputs serão inseridos aqui pelo JS -->
+            </div>
+
+            <button id="confirm-answers-button" class="game-button">Confirmar Respostas</button>
+            <button id="next-round-button" class="game-button" style="display:none;">Próxima Rodada</button>
+            <button id="finish-game-button" class="game-button">Finalizar Jogo</button>
+            
+            <p id="feedback-message"></p>
+            <p id="round-score"></p>
+            <p id="total-score"></p>
+        </div>
+    </div>
+
+    <script>
+        const allCategories = [
+            "Pessoa", "Lugar", "Comida", "Animal", "Parte do corpo", 
+            "Profissão", "Filme/Programa de TV/Série", "Meu namorado(a) é", 
+            "Marca famosa", "Marca de carro", "Objetos"
+        ];
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVXZ"; // Letras para sortear (sem K, W, Y)
+
+        // Lista de arquivos de música de fundo (coloque seus 10 arquivos aqui!)
+        const backgroundMusicFiles = [
+            "music/background_music_01.mp3",
+            "music/background_music_02.mp3",
+            "music/background_music_03.mp3",
+            "music/background_music_04.mp3",
+            "music/background_music_05.mp3",
+            "music/background_music_06.mp3",
+            "music/background_music_07.mp3",
+            "music/background_music_08.mp3",
+            "music/background_music_09.mp3",
+            "music/background_music_10.mp3"
+        ];
+
+        let selectedCategories = [];
+        let usedLetters = [];
+        let currentLetter = '';
+        let currentRound = 0;
+        let totalScore = 0;
+        let currentRoundScore = 0; // Pontuação da rodada atual
+        let currentMusicIndex = 0; // Índice da música atual na playlist
+
+        // Referências aos elementos HTML
+        const gameContainer = document.getElementById('game-container');
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const categorySelectionDiv = document.getElementById('category-selection');
+        const startGameButton = document.getElementById('start-game-button');
+        const backToQuizButton = document.getElementById('back-to-quiz-button');
+        const currentLetterDiv = document.getElementById('current-letter');
+        const answersArea = document.getElementById('answers-area');
+        const confirmAnswersButton = document.getElementById('confirm-answers-button');
+        const nextRoundButton = document.getElementById('next-round-button');
+        const finishGameButton = document.getElementById('finish-game-button');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const roundScoreDisplay = document.getElementById('round-score');
+        const totalScoreDisplay = document.getElementById('total-score');
+        const roundInfoDisplay = document.getElementById('round-info');
+
+        // Sons
+        const backgroundMusicPlayer = document.getElementById('background-music-player'); // O player de áudio
+        const musicToggleButton = document.getElementById('music-toggle-button');
+        const nextMusicButton = document.getElementById('next-music-button'); // Novo botão para próxima música
+        const buttonClickSound = document.getElementById('button-click-sound');
+        const correctSound = document.getElementById('correct-sound');
+        const incorrectSound = document.getElementById('incorrect-sound');
+        const victorySound = document.getElementById('victory-sound');
+        const audioMessageDiv = document.getElementById('audio-message'); // Novo elemento para mensagens de áudio
+
+        // --- Funções de Áudio ---
+        function playSound(soundElement) {
+            soundElement.currentTime = 0; // Reinicia o som
+            soundElement.play().catch(e => console.error("Erro ao tocar som:", e));
+        }
+
+        function toggleBackgroundMusic() {
+            if (backgroundMusicPlayer.paused) {
+                // Se estiver pausada, tenta tocar a música atual
+                backgroundMusicPlayer.src = backgroundMusicFiles[currentMusicIndex];
+                backgroundMusicPlayer.play().then(() => {
+                    musicToggleButton.textContent = "Pausar Música";
+                    audioMessageDiv.textContent = ''; // Limpa a mensagem se a música tocar
+                }).catch(e => {
+                    console.error("Erro ao tentar tocar a música de fundo:", e);
+                    audioMessageDiv.textContent = "Seu navegador pode ter bloqueado a reprodução automática de áudio. Por favor, clique em 'Tocar Música'.";
+                });
+            } else {
+                backgroundMusicPlayer.pause();
+                musicToggleButton.textContent = "Tocar Música";
+                audioMessageDiv.textContent = ''; // Limpa a mensagem ao pausar
+            }
+        }
+
+        function playNextTrack() {
+            playSound(buttonClickSound);
+            currentMusicIndex = (currentMusicIndex + 1) % backgroundMusicFiles.length;
+            backgroundMusicPlayer.src = backgroundMusicFiles[currentMusicIndex];
+            backgroundMusicPlayer.play().then(() => {
+                musicToggleButton.textContent = "Pausar Música";
+                audioMessageDiv.textContent = ''; // Limpa a mensagem se a música tocar
+            }).catch(e => {
+                console.error("Erro ao tocar próxima música:", e);
+                audioMessageDiv.textContent = "Seu navegador pode ter bloqueado a reprodução automática de áudio. Por favor, clique em 'Tocar Música'.";
+            });
+        }
+
+        // --- Funções do Jogo ---
+
+        // Função para embaralhar um array (Fisher-Yates shuffle)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Gera os checkboxes de categorias
+        function generateCategoryCheckboxes() {
+            categorySelectionDiv.innerHTML = '';
+            allCategories.forEach(category => {
+                const div = document.createElement('div');
+                div.classList.add('category-checkbox');
+                div.innerHTML = `
+                    <input type="checkbox" id="cat-${category}" value="${category}">
+                    <label for="cat-${category}">${category}</label>
+                `;
+                categorySelectionDiv.appendChild(div);
+            });
+        }
+
+        // Habilita/desabilita o botão Iniciar Jogo baseado na seleção de categorias
+        function updateStartButtonState() {
+            const checkedBoxes = Array.from(categorySelectionDiv.querySelectorAll('input[type="checkbox"]:checked'));
+            startGameButton.disabled = checkedBoxes.length === 0 || checkedBoxes.length > 8;
+        }
+
+        // Seleciona uma letra aleatória não repetida
+        function getRandomLetter() {
+            const availableLetters = alphabet.split('').filter(letter => !usedLetters.includes(letter));
+            if (availableLetters.length === 0) {
+                // Se todas as letras foram usadas, reinicia o pool (opcional, ou finaliza o jogo)
+                usedLetters = []; // Reinicia para permitir mais rodadas
+                audioMessageDiv.textContent = "Todas as letras foram usadas! O jogo irá reiniciar o pool de letras.";
+                setTimeout(() => audioMessageDiv.textContent = '', 3000); // Limpa a mensagem
+                return getRandomLetter(); 
+            }
+            const randomIndex = Math.floor(Math.random() * availableLetters.length);
+            const letter = availableLetters[randomIndex];
+            usedLetters.push(letter);
+            return letter;
+        }
+
+        // Inicia uma nova rodada
+        function startNewRound() {
+            playSound(buttonClickSound);
+            feedbackMessage.textContent = '';
+            roundScoreDisplay.textContent = '';
+            currentRoundScore = 0; // Reseta a pontuação da rodada
+            currentRound++;
+            roundInfoDisplay.textContent = `Rodada: ${currentRound}`;
+            
+            currentLetter = getRandomLetter();
+            currentLetterDiv.textContent = currentLetter;
+            answersArea.innerHTML = ''; // Limpa a área de respostas
+
+            selectedCategories.forEach(category => {
+                const categoryItem = document.createElement('div');
+                categoryItem.classList.add('category-item');
+                categoryItem.innerHTML = `
+                    <label>${category}:</label>
+                    <div class="category-input-group">
+                        <input type="text" data-category="${category}" placeholder="Começa com ${currentLetter}">
+                        <div class="score-buttons" style="display:none;">
+                            <button class="btn-5-points" data-points="5">5 pontos (Comum)</button>
+                            <button class="btn-10-points" data-points="10">10 pontos (Original)</button>
+                        </div>
+                    </div>
+                `;
+                answersArea.appendChild(categoryItem);
+            });
+
+            confirmAnswersButton.style.display = 'inline-block';
+            nextRoundButton.style.display = 'none'; // Esconde o botão de próxima rodada no início
+            finishGameButton.disabled = false;
+        }
+
+        // Confirma as respostas digitadas e habilita os botões de pontuação
+        function confirmAnswers() {
+            playSound(buttonClickSound);
+            const inputs = answersArea.querySelectorAll('input[type="text"]');
+            
+            inputs.forEach(input => {
+                const answer = input.value.trim();
+                const scoreButtonsDiv = input.nextElementSibling; // O div com os botões de pontuação
+
+                input.disabled = true; // Desabilita o input após a confirmação
+
+                if (answer.length > 0 && answer.toUpperCase().startsWith(currentLetter)) {
+                    scoreButtonsDiv.style.display = 'flex'; // Mostra os botões de pontuação
+                    const btn5 = scoreButtonsDiv.querySelector('.btn-5-points');
+                    const btn10 = scoreButtonsDiv.querySelector('.btn-10-points');
+
+                    // Adiciona listeners para os botões de pontuação
+                    btn5.onclick = () => scoreAnswer(input, 5);
+                    btn10.onclick = () => scoreAnswer(input, 10);
+
+                } else {
+                    // Se a resposta for inválida, desabilita os botões de pontuação
+                    scoreButtonsDiv.style.display = 'flex'; // Mostra mesmo que inválido, para não sumir
+                    const btn5 = scoreButtonsDiv.querySelector('.btn-5-points');
+                    const btn10 = scoreButtonsDiv.querySelector('.btn-10-points');
+                    btn5.disabled = true;
+                    btn10.disabled = true;
+                    input.value = "(Inválido)"; // Indica que a resposta não pontuou
+                    input.style.backgroundColor = '#EF9A9A'; /* Corrigido: Usar valor hexadecimal direto */
+                    input.style.color = '#C62828'; /* Corrigido: Usar valor hexadecimal direto */
+                }
+            });
+
+            confirmAnswersButton.style.display = 'none'; // Esconde o botão de confirmar
+            nextRoundButton.style.display = 'inline-block'; // Mostra o botão de próxima rodada
+            nextRoundButton.textContent = "Finalizar Rodada"; // Altera o texto para finalizar
+        }
+
+        // Pontua uma resposta específica
+        function scoreAnswer(inputElement, points) {
+            playSound(buttonClickSound);
+            const scoreButtonsDiv = inputElement.nextElementSibling;
+            const btn5 = scoreButtonsDiv.querySelector('.btn-5-points');
+            const btn10 = scoreButtonsDiv.querySelector('.btn-10-points');
+
+            // Desabilita os botões de pontuação após a escolha
+            btn5.disabled = true;
+            btn10.disabled = true;
+
+            currentRoundScore += points;
+            roundScoreDisplay.textContent = `Pontos da Rodada: ${currentRoundScore}`;
+            totalScoreDisplay.textContent = `Pontuação Total: ${totalScore + currentRoundScore}`;
+
+            if (points === 10) {
+                playSound(correctSound); // Som de acerto para 10 pontos
+                inputElement.style.backgroundColor = '#A5D6A7'; /* Corrigido: Usar valor hexadecimal direto */
+                inputElement.style.color = '#2E7D32'; /* Corrigido: Usar valor hexadecimal direto */
+            } else {
+                playSound(incorrectSound); // Som de erro/5 pontos para 5 pontos
+                inputElement.style.backgroundColor = '#EF9A9A'; /* Corrigido: Usar valor hexadecimal direto */
+                inputElement.style.color = '#C62828'; /* Corrigido: Usar valor hexadecimal direto */
+            }
+        }
+
+        // Finaliza a rodada e avança para a próxima ou para o fim do jogo
+        function endRound() {
+            playSound(buttonClickSound);
+            totalScore += currentRoundScore; // Adiciona a pontuação da rodada ao total
+            totalScoreDisplay.textContent = `Pontuação Total: ${totalScore}`;
+            feedbackMessage.textContent = `Rodada ${currentRound} finalizada! Você fez ${currentRoundScore} pontos.`;
+
+            // Mostra o total a cada 5 rodadas
+            if (currentRound % 5 === 0 && currentRound > 0) {
+                feedbackMessage.textContent += ` 🎉 Total acumulado: ${totalScore} pontos! 🎉`;
+            }
+
+            // Verifica se há mais letras para jogar ou finaliza
+            if (usedLetters.length < alphabet.length && currentRound < 10) { // Limite de 10 rodadas ou até acabar as letras
+                setTimeout(startNewRound, 2000); // Pequeno atraso antes da próxima rodada
+            } else {
+                finishGame();
+            }
+        }
+
+        // Finaliza o jogo (tela final)
+        function finishGame() {
+            playSound(buttonClickSound);
+            // Garante que a pontuação da última rodada seja adicionada se não foi
+            if (nextRoundButton.style.display !== 'none' && nextRoundButton.textContent === "Finalizar Rodada") {
+                 // No caso de clicar em finalizar sem ter pontuado todas as respostas
+                 // ou se a última rodada não foi calculada ainda.
+                 // Para simplificar, vamos garantir que `totalScore` seja o final.
+                 totalScoreDisplay.textContent = `Pontuação Total: ${totalScore}`;
+            }
+
+            feedbackMessage.textContent = "Jogo Finalizado!";
+            roundInfoDisplay.textContent = '';
+            roundScoreDisplay.textContent = '';
+            confirmAnswersButton.style.display = 'none';
+            nextRoundButton.style.display = 'none';
+            finishGameButton.style.display = 'none';
+
+            // Verifica se a pontuação é alta para tocar som de vitória
+            if (totalScore > (selectedCategories.length * 10 * (currentRound / 2))) { 
+                playSound(victorySound);
+            }
+
+            // Opção para reiniciar ou voltar
+            const restartButton = document.createElement('button');
+            restartButton.textContent = "Jogar Novamente";
+            restartButton.classList.add('game-button');
+            restartButton.addEventListener('click', () => {
+                playSound(buttonClickSound);
+                resetGame();
+            });
+            gameScreen.appendChild(restartButton);
+
+            const backButton = document.createElement('button');
+            backButton.textContent = "Voltar para o Quiz";
+            backButton.classList.add('game-button');
+            backButton.addEventListener('click', () => {
+                playSound(buttonClickSound);
+                // NOTA: Neste ambiente, a navegação direta entre ficheiros HTML não é suportada.
+                // Para acessar o jogo de Quiz, você precisará solicitá-lo.
+                audioMessageDiv.textContent = "Para voltar ao Quiz, por favor, me peça para gerar o 'Jogo de Quiz da Letícia' novamente.";
+                setTimeout(() => audioMessageDiv.textContent = '', 5000); // Limpa a mensagem
+            });
+            gameScreen.appendChild(backButton);
+        }
+
+        // Reseta o jogo para a tela inicial
+        function resetGame() {
+            selectedCategories = [];
+            usedLetters = [];
+            currentRound = 0;
+            totalScore = 0;
+            currentRoundScore = 0;
+            feedbackMessage.textContent = '';
+            roundScoreDisplay.textContent = '';
+            totalScoreDisplay.textContent = '';
+            roundInfoDisplay.textContent = '';
+            audioMessageDiv.textContent = ''; // Limpa a mensagem de áudio ao resetar
+            
+            confirmAnswersButton.style.display = 'inline-block';
+            nextRoundButton.style.display = 'none'; // Esconde na reinicialização
+            finishGameButton.style.display = 'inline-block';
+            
+            const restartBtn = gameScreen.querySelector('.game-button:nth-last-child(2)');
+            const backBtn = gameScreen.querySelector('.game-button:last-child');
+            if (restartBtn) restartBtn.remove();
+            if (backBtn) backBtn.remove();
+
+            startScreen.style.display = 'block';
+            gameScreen.style.display = 'none';
+            generateCategoryCheckboxes(); // Regenera checkboxes
+            updateStartButtonState(); // Atualiza o estado do botão iniciar
+            if (!backgroundMusicPlayer.paused) { // Pausa a música ao voltar para a tela inicial
+                backgroundMusicPlayer.pause();
+                musicToggleButton.textContent = "Tocar Música";
+            }
+        }
+
+        // --- Event Listeners ---
+        startGameButton.addEventListener('click', () => {
+            playSound(buttonClickSound);
+            selectedCategories = Array.from(categorySelectionDiv.querySelectorAll('input[type="checkbox"]:checked'))
+                                    .map(cb => cb.value);
+            if (selectedCategories.length > 0 && selectedCategories.length <= 8) {
+                startScreen.style.display = 'none';
+                gameScreen.style.display = 'block';
+                startNewRound();
+                // Toca a primeira música ao iniciar o jogo
+                backgroundMusicPlayer.src = backgroundMusicFiles[currentMusicIndex];
+                backgroundMusicPlayer.play().then(() => {
+                    musicToggleButton.textContent = "Pausar Música";
+                    audioMessageDiv.textContent = ''; // Limpa a mensagem se a música tocar
+                }).catch(e => console.error("Erro ao tocar música de fundo:", e));
+            } else {
+                audioMessageDiv.textContent = "Por favor, selecione entre 1 e 8 categorias.";
+                setTimeout(() => audioMessageDiv.textContent = '', 3000); // Limpa a mensagem
+            }
+        });
+
+        categorySelectionDiv.addEventListener('change', updateStartButtonState);
+
+        confirmAnswersButton.addEventListener('click', confirmAnswers);
+
+        nextRoundButton.addEventListener('click', endRound);
+
+        finishGameButton.addEventListener('click', finishGame);
+
+        musicToggleButton.addEventListener('click', toggleBackgroundMusic);
+        nextMusicButton.addEventListener('click', playNextTrack); // Evento para o novo botão
+
+        backToQuizButton.addEventListener('click', () => {
+            playSound(buttonClickSound);
+            // NOTA: Neste ambiente, a navegação direta entre ficheiros HTML não é suportada.
+            // Para acessar o jogo de Quiz, você precisará solicitá-lo.
+            audioMessageDiv.textContent = "Para voltar ao Quiz, por favor, me peça para gerar o 'Jogo de Quiz da Letícia' novamente.";
+            setTimeout(() => audioMessageDiv.textContent = '', 5000); // Limpa a mensagem
+        });
+
+        // Inicializa o jogo na tela de seleção de categorias
+        generateCategoryCheckboxes();
+        updateStartButtonState(); // Define o estado inicial do botão Iniciar
+    </script>
+</body>
+</html>
